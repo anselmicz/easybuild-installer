@@ -51,7 +51,7 @@ pending "Cleaning up directories..."
 rm -rf $main_prefix/easybuild/ $EB_TMPDIR /tmp/eb-* && okay
 
 pending "Installing dependencies..."
-sudo apt install -y wget gcc make rsync tclsh tcl-dev libreadline-dev python3-pip 1>/dev/null 2>&1 && okay
+sudo apt install -y wget gcc make rsync tclsh tcl-dev libreadline-dev python3-pip xdot 1>/dev/null 2>&1 && okay
 
 pending "Downloading lua..."
 wget -q -O "lua-${lua_version}.tar.bz2" "https://sourceforge.net/projects/lmod/files/lua-${lua_version}.tar.bz2/download" && okay || exit 1
@@ -137,6 +137,9 @@ EOF
 echo "setenv(\"EASYBUILD_ROBOT_PATHS\", \"$main_prefix/easybuild-easyconfigs/easybuild/easyconfigs\")" >> $(find $easybuild_prefix/modules/all/EasyBuild/ -name *.lua)
 echo "add_property(\"lmod\", \"sticky\")" >> $(find $easybuild_prefix/modules/all/EasyBuild/ -name *.lua)
 okay
+
+pending "Installing dependency plotting tools..."
+python3 -m pip install python-graph-core python-graph-dot && okay || exit 10
 
 pending "Cleaning up..."
 yes | rm -r "lua-${lua_version}.tar.bz2" "lua-${lua_version}/" "Lmod-${lmod_version}.tar.bz2" "Lmod-${lmod_version}/" "$EB_TMPDIR"

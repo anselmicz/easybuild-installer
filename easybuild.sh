@@ -3,7 +3,7 @@
 ########################################################
 ### CONFIG
 ## main
-main_prefix=$HOME/.local/EasyBuild
+main_prefix=$HOME/.local/easybuild
 #
 ## lua
 lua_version="5.1.4.9"
@@ -20,6 +20,7 @@ lmod_cmd=$lmod_prefix/lmod/$lmod_version/libexec/lmod
 # latest version
 eb_tmpdir="EB_TMPDIR=/tmp/$USER/eb_tmp"
 easybuild_prefix=$main_prefix
+easybuild_config=$HOME/.config/easybuild
 easybuildrc=$main_prefix/dependencies/easybuildrc
 ## colors
 #
@@ -48,41 +49,45 @@ easybuild ()
 # for Debian clean install
 
 pending "Cleaning up directories..."
-rm -rf $main_prefix/easybuild/ $EB_TMPDIR /tmp/eb-* && okay
+rm -rf $main_prefix $easybuild_config $EB_TMPDIR /tmp/eb-* && okay
 
 pending "Installing dependencies..."
 sudo apt install -y wget gcc make rsync tclsh tcl-dev libreadline-dev libibverbs-dev python3-pip xdot 1>/dev/null 2>&1 && okay
 
+pending "Installing non-essential python dependencies..."
+python3 -m pip install python-graph-core python-graph-dot archspec autopep8 GitPython pep8 pycodestyle Rich setuptools 1>/dev/null 2>&1 && okay || exit 1
+
 pending "Downloading lua..."
-wget -q -O "lua-${lua_version}.tar.bz2" "https://sourceforge.net/projects/lmod/files/lua-${lua_version}.tar.bz2/download" && okay || exit 1
+wget -q -O "lua-${lua_version}.tar.bz2" "https://sourceforge.net/projects/lmod/files/lua-${lua_version}.tar.bz2/download" && okay || exit 2
 
 pending "Extracting lua..."
-tar xjf "lua-${lua_version}.tar.bz2" && okay || exit 2
+tar xjf "lua-${lua_version}.tar.bz2" && okay || exit 3
 
 pending "Compiling lua..."
 cd "lua-${lua_version}"
-./configure --quiet --with-static=yes --prefix=$lua_prefix 1>/dev/null 2>&1 && make --quiet 1>/dev/null 2>&1 && make --quiet install 1>/dev/null 2>&1 && export PATH=$lua_prefix/bin:$PATH && okay || exit 3
+./configure --quiet --with-static=yes --prefix=$lua_prefix 1>/dev/null 2>&1 && make --quiet 1>/dev/null 2>&1 && make --quiet install 1>/dev/null 2>&1 && export PATH=$lua_prefix/bin:$PATH && okay || exit 4
 cd ../
 
 pending "Downloading Lmod..."
-wget -q -O "Lmod-${lmod_version}.tar.bz2" "https://sourceforge.net/projects/lmod/files/Lmod-${lmod_version}.tar.bz2/download" && okay || exit 4
+wget -q -O "Lmod-${lmod_version}.tar.bz2" "https://sourceforge.net/projects/lmod/files/Lmod-${lmod_version}.tar.bz2/download" && okay || exit 5
 
 pending "Extracting Lmod..."
-tar xjf "Lmod-${lmod_version}.tar.bz2" && okay || exit 5
+tar xjf "Lmod-${lmod_version}.tar.bz2" && okay || exit 6
 
 pending "Compiling Lmod..."
 cd "Lmod-${lmod_version}"
-./configure --quiet --prefix=$lmod_prefix 1>/dev/null 2>&1 && make --quiet install 1>/dev/null 2>&1 && okay || exit 6
+./configure --quiet --prefix=$lmod_prefix 1>/dev/null 2>&1 && make --quiet install 1>/dev/null 2>&1 && okay || exit 7
 cd ../
 
 pending "Setting up PATH..."
 echo "# $easybuildrc: EasyBuild environment file" > $easybuildrc
+echo "export EB_PYTHON=python3" >> $easybuildrc
 echo "" >> $easybuildrc
 echo "# Lmod environment" >> $easybuildrc
 echo "export PATH=$lmod_prefix:\$PATH" >> $easybuildrc && echo "source $lmod_init_bash" >> $easybuildrc && echo "export LMOD_CMD=$lmod_cmd" >> $easybuildrc
 grep -qxF "if [ -f $easybuildrc ]; then source $easybuildrc; fi" ~/.bashrc || \
 	(echo "" >> ~/.bashrc; echo "# EasyBuild Environment" >> ~/.bashrc; echo "if [ -f $easybuildrc ]; then source $easybuildrc; fi" >> ~/.bashrc)
-source $easybuildrc && okay
+. $easybuildrc && okay
 
 echo ""
 easybuild "###################################"
@@ -91,25 +96,58 @@ easybuild "###################################"
 echo ""
 pending "Making a temporary EasyBuild installation in /tmp..."
 export $eb_tmpdir
-python3 -m pip install --ignore-installed --prefix $EB_TMPDIR easybuild && okay || exit 7
+python3 -m pip install --ignore-installed --prefix $EB_TMPDIR easybuild 1>/dev/null 2>&1 && okay || exit 8
 
 pending "Updating the environment..."
 export PATH=$EB_TMPDIR/bin:$PATH
 export PYTHONPATH=$(/bin/ls -rtd -1 $EB_TMPDIR/lib*/python*/site-packages | tail -1):$PYTHONPATH
-export EB_PYTHON=python3
+#export EB_PYTHON=python3
+okay
+
+pending "Generating EasyBuild configuration..."
+mkdir $easybuild_config
+cat > $easybuild_config/config.cfg <<EOF
+[MAIN]
+
+[basic]
+locks-dir=$main_prefix/.locks/
+#robot=$main_prefix/easybuild-easyconfigs/easybuild/easyconfigs
+robot-paths=$main_prefix/easybuild-easyconfigs/easybuild/easyconfigs
+
+[config]
+buildpath=$main_prefix/build
+installpath=$main_prefix
+installpath-modules=$main_prefix/modules
+installpath-software=$main_prefix/all
+moduleclasses=python
+repository=FileRepository
+repositorypath=$main_prefix/file-repository
+sourcepath=$main_prefix/sources
+
+[easyconfig]
+local-var-naming-check=error
+
+[override]
+detect-loaded-modules=purge
+dump-autopep8=True
+enforce-checksums=True
+silence-deprecation-warnings=True
+trace=True
+wait-on-lock-interval=600
+EOF
 okay
 
 pending "Installing EasyBuild module with EasyBuild..."
-eb --install-latest-eb-release --prefix $easybuild_prefix && okay || exit 8
+eb --install-latest-eb-release --prefix $easybuild_prefix && okay || exit 9
 
 pending "Downloading current easyconfigs..."
-cd $main_prefix && git clone https://github.com/easybuilders/easybuild-easyconfigs.git && cd - && okay || exit 9
+cd $main_prefix && git clone https://github.com/easybuilders/easybuild-easyconfigs.git && cd - && okay || exit 10
 
 pending "Setting up environment..."
 echo "" >> $easybuildrc
 echo "# tell Lmod where to search for modules" >> $easybuildrc
 #
-cat <<EOF >> $easybuildrc
+cat >> $easybuildrc <<EOF
 if [ "\$(id -u)" -ne 0 ]; then
     MODULEPATH=""
 
@@ -136,10 +174,10 @@ EOF
 
 echo "setenv(\"EASYBUILD_ROBOT_PATHS\", \"$main_prefix/easybuild-easyconfigs/easybuild/easyconfigs\")" >> $(find $easybuild_prefix/modules/all/EasyBuild/ -name *.lua)
 echo "add_property(\"lmod\", \"sticky\")" >> $(find $easybuild_prefix/modules/all/EasyBuild/ -name *.lua)
-okay
 
-pending "Installing dependency plotting tools..."
-python3 -m pip install python-graph-core python-graph-dot && okay || exit 10
+# make easybuild autoresolve dependencies
+sed -i 's/#//g' $easybuild_config/config.cfg
+okay
 
 pending "Cleaning up..."
 yes | rm -r "lua-${lua_version}.tar.bz2" "lua-${lua_version}/" "Lmod-${lmod_version}.tar.bz2" "Lmod-${lmod_version}/" "$EB_TMPDIR"

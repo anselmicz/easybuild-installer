@@ -105,7 +105,7 @@ export PYTHONPATH=$(/bin/ls -rtd -1 $EB_TMPDIR/lib*/python*/site-packages | tail
 okay
 
 pending "Generating EasyBuild configuration..."
-mkdir $easybuild_config
+mkdir -p $easybuild_config
 cat > $easybuild_config/config.cfg <<EOF
 [MAIN]
 

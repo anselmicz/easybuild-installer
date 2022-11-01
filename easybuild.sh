@@ -49,7 +49,7 @@ easybuild ()
 # for Debian clean install
 
 if [ $EUID == 0 ]
-then 
+then
 	echo "Running as root; exiting..."
 	exit 255
 fi
@@ -107,8 +107,8 @@ export $eb_tmpdir
 python3 -m pip install --ignore-installed --prefix $EB_TMPDIR easybuild 1>/dev/null 2>&1 && okay || exit 8
 
 pending "Updating the environment..."
-export PATH=$EB_TMPDIR/bin:$PATH
-export PYTHONPATH=$(/bin/ls -rtd -1 $EB_TMPDIR/lib*/python*/site-packages | tail -1):$PYTHONPATH
+export PATH=$EB_TMPDIR/local/bin:$PATH
+export PYTHONPATH=$(/bin/ls -rtd -1 $EB_TMPDIR/local/lib*/python*/dist-packages | tail -1):$PYTHONPATH
 export EB_PYTHON=python3
 okay
 

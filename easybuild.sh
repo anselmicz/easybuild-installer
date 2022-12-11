@@ -22,6 +22,8 @@ eb_tmpdir="EB_TMPDIR=/tmp/$USER/eb_tmp"
 easybuild_prefix=$main_prefix
 easybuild_config=$HOME/.config/easybuild
 easybuildrc=$main_prefix/dependencies/easybuildrc
+## CUDA
+cuda_cc="8.6"
 ## colors
 #
 color_ok='\033[0;32m'
@@ -61,7 +63,7 @@ pending "Installing dependencies..."
 sudo apt install -y wget gcc make rsync tclsh tcl-dev libreadline-dev libibverbs-dev python3-pip xdot 1>/dev/null 2>&1 && okay
 
 pending "Installing non-essential python dependencies..."
-python3 -m pip install python-graph-core python-graph-dot archspec autopep8 GitPython pep8 pycodestyle Rich setuptools 1>/dev/null 2>&1 && okay || exit 1
+python3 -m pip install --upgrade python-graph-core python-graph-dot archspec autopep8 GitPython pep8 pycodestyle Rich setuptools 1>/dev/null 2>&1 && okay || exit 1
 
 if [ ! -f "lua-${lua_version}.tar.bz2" ]; then
 	pending "Downloading lua..."
@@ -107,8 +109,8 @@ export $eb_tmpdir
 python3 -m pip install --ignore-installed --prefix $EB_TMPDIR easybuild 1>/dev/null 2>&1 && okay || exit 8
 
 pending "Updating the environment..."
-export PATH=$EB_TMPDIR/local/bin:$PATH
-export PYTHONPATH=$(/bin/ls -rtd -1 $EB_TMPDIR/local/lib*/python*/dist-packages | tail -1):$PYTHONPATH
+export PATH=$(find $EB_TMPDIR -type d -name bin):$PATH
+export PYTHONPATH=$(find $EB_TMPDIR -type d -name *-packages | tail -1)
 export EB_PYTHON=python3
 okay
 
@@ -141,11 +143,13 @@ dump-autopep8=True
 enforce-checksums=True
 silence-deprecation-warnings=True
 trace=True
+#cuda-compute-capabilities=$cuda_cc
 wait-on-lock-interval=600
 EOF
 okay
 
 pending "Installing EasyBuild module with EasyBuild..."
+env > env.log
 eb --install-latest-eb-release --prefix $easybuild_prefix && okay || exit 9
 
 pending "Downloading current easyconfigs..."
@@ -182,7 +186,7 @@ EOF
 { echo "setenv(\"EASYBUILD_ROBOT_PATHS\", \"$main_prefix/easybuild-easyconfigs/easybuild/easyconfigs\")"; echo "add_property(\"lmod\", \"sticky\")"; } >> $(find $easybuild_prefix/modules/all/EasyBuild/ -name *.lua)
 
 # make easybuild autoresolve dependencies
-sed -i 's/#//' $easybuild_config/config.cfg
+sed -i 's/#//g' $easybuild_config/config.cfg
 okay
 
 pending "Cleaning up..."

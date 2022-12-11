@@ -60,35 +60,35 @@ pending "Cleaning up directories..."
 rm -rf $main_prefix $easybuild_config $EB_TMPDIR /tmp/eb-* && okay
 
 pending "Installing dependencies..."
-sudo apt install -y wget gcc make rsync tclsh tcl-dev libreadline-dev libibverbs-dev python3-pip xdot && okay
+sudo apt install -y wget gcc make rsync tclsh tcl-dev libreadline-dev libibverbs-dev python3-pip xdot 1>/dev/null 2>&1 && okay
 
 pending "Installing non-essential python dependencies..."
-python3 -m pip install --upgrade python-graph-core python-graph-dot archspec autopep8 GitPython pep8 pycodestyle Rich setuptools && okay || exit 1
+python3 -m pip install --upgrade python-graph-core python-graph-dot archspec autopep8 GitPython pep8 pycodestyle Rich setuptools 1>/dev/null 2>&1 && okay || exit 1
 
 if [ ! -f "lua-${lua_version}.tar.bz2" ]; then
 	pending "Downloading lua..."
-	wget -O "lua-${lua_version}.tar.bz2" "https://sourceforge.net/projects/lmod/files/lua-${lua_version}.tar.bz2/download" && okay || exit 2
+	wget -q -O "lua-${lua_version}.tar.bz2" "https://sourceforge.net/projects/lmod/files/lua-${lua_version}.tar.bz2/download" && okay || exit 2
 fi
 
 pending "Extracting lua..."
-tar xjvf "lua-${lua_version}.tar.bz2" && okay || exit 3
+tar xjf "lua-${lua_version}.tar.bz2" && okay || exit 3
 
 pending "Compiling lua..."
 cd "lua-${lua_version}"
-./configure --with-static=yes --prefix=$lua_prefix && make && make install && export PATH=$lua_prefix/bin:$PATH && okay || exit 4
+./configure --quiet --with-static=yes --prefix=$lua_prefix 1>/dev/null 2>&1 && make --quiet 1>/dev/null 2>&1 && make --quiet install 1>/dev/null 2>&1 && export PATH=$lua_prefix/bin:$PATH && okay || exit 4
 cd ../
 
 if [ ! -f "Lmod-${lmod_version}.tar.bz2" ]; then
 	pending "Downloading Lmod..."
-	wget -O "Lmod-${lmod_version}.tar.bz2" "https://sourceforge.net/projects/lmod/files/Lmod-${lmod_version}.tar.bz2/download" && okay || exit 5
+	wget -q -O "Lmod-${lmod_version}.tar.bz2" "https://sourceforge.net/projects/lmod/files/Lmod-${lmod_version}.tar.bz2/download" && okay || exit 5
 fi
 
 pending "Extracting Lmod..."
-tar xjvf "Lmod-${lmod_version}.tar.bz2" && okay || exit 6
+tar xjf "Lmod-${lmod_version}.tar.bz2" && okay || exit 6
 
 pending "Compiling Lmod..."
 cd "Lmod-${lmod_version}"
-./configure --prefix=$lmod_prefix && make install && okay || exit 7
+./configure --quiet --prefix=$lmod_prefix 1>/dev/null 2>&1 && make --quiet install 1>/dev/null 2>&1 && okay || exit 7
 cd ../
 
 pending "Setting up PATH..."
@@ -106,7 +106,7 @@ easybuild "###################################"
 echo ""
 pending "Making a temporary EasyBuild installation in /tmp..."
 export $eb_tmpdir
-python3 -m pip install --ignore-installed --prefix $EB_TMPDIR easybuild && okay || exit 8
+python3 -m pip install --ignore-installed --prefix $EB_TMPDIR easybuild 1>/dev/null 2>&1 && okay || exit 8
 
 pending "Updating the environment..."
 export PATH=$(find $EB_TMPDIR -type d -name bin):$PATH
@@ -149,6 +149,7 @@ EOF
 okay
 
 pending "Installing EasyBuild module with EasyBuild..."
+env > env.log
 eb --install-latest-eb-release --prefix $easybuild_prefix && okay || exit 9
 
 pending "Downloading current easyconfigs..."

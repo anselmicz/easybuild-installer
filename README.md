@@ -15,6 +15,6 @@ Parts taken from [EasyBuild](https://docs.easybuild.io/), and [Lmod](https://lmo
 sudo apt update && sudo apt upgrade -y
 git clone https://github.com/anselmicz/easybuild-installer.git
 cd easybuild-installer/
-chmod +x easybuild.sh && ./$_
+chmod +x easybuild-pretty.sh && ./$_
 cd - && rm -rf easybuild-installer/
 ```

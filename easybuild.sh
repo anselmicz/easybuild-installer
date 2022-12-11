@@ -125,7 +125,7 @@ locks-dir=$main_prefix/.locks/
 robot-paths=$main_prefix/easybuild-easyconfigs/easybuild/easyconfigs
 
 [config]
-buildpath=$main_prefix/build
+buildpath=/dev/shm
 installpath=$main_prefix
 installpath-modules=$main_prefix/modules
 installpath-software=$main_prefix/all

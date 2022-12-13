@@ -63,7 +63,7 @@ then
 fi
 
 pending "Cleaning up directories..."
-rm -rf $main_prefix $easybuild_config $EB_TMPDIR /tmp/eb-* && okay
+rm -rf $main_prefix $easybuild_config /tmp/eb-* && okay
 
 pending "Installing dependencies..."
 sudo apt install -y wget gcc make rsync tclsh tcl-dev libreadline-dev libibverbs-dev python3-pip xdot && okay
@@ -121,7 +121,7 @@ cd "Lmod-${lmod_version}"
 ./configure --prefix=$lmod_prefix --with-spiderCacheDir=$lmod_spidercachedir --with-updateSystemFn=$lmod_updatesystemfn && make install && okay || exit 7
 cd ../
 
-cat > createSystemCache.sh <<EOF
+cat > $lmod_prefix/moduleData/createSystemCache.sh <<EOF
 $lmod_libexec/update_lmod_system_cache_files -t $lmod_updatesystemfn -d $lmod_spidercachedir \$MODULEPATH
 EOF
 chmod +x createSystemCache.sh
@@ -140,12 +140,14 @@ easybuild "###################################"
 echo ""
 pending "Making a temporary EasyBuild installation in /tmp..."
 export $eb_tmpdir
+
+# remove old tmp dir after it's location has been exported into the environment
+rm -rf $EB_TMPDIR
 python3 -m pip install --ignore-installed --prefix $EB_TMPDIR easybuild && okay || exit 8
 
 pending "Updating the environment..."
 export PATH=$(find $EB_TMPDIR -type d -name bin):$PATH
 export PYTHONPATH=$(find $EB_TMPDIR -type d -name *-packages | tail -1)
-export EB_PYTHON=python3
 okay
 
 pending "Generating EasyBuild configuration..."
@@ -223,7 +225,7 @@ sed -i 's/#//g' $easybuild_config/config.cfg
 okay
 
 pending "Cleaning up..."
-yes | rm -r "lua-${lua_version}.tar.bz2" "lua-${lua_version}/" "Lmod-${lmod_version}.tar.bz2" "Lmod-${lmod_version}/" "$EB_TMPDIR"
+yes | rm -r "lua-${lua_version}.tar.gz" "lua-${lua_version}/" "luarocks-${luarocks_version}.tar.gz" "luarocks-3.9.1/" "Lmod-${lmod_version}.tar.gz" "Lmod-${lmod_version}/" "$EB_TMPDIR"
 okay
 
 echo ""

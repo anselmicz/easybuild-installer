@@ -5,7 +5,7 @@ Parts taken from [EasyBuild](https://docs.easybuild.io/), and [Lmod](https://lmo
 
 ## What it does
 
-* creates local installation of EasyBuild, by default under `$HOME/.local/EasyBuild`, and compiles the Lmod and Lua dependencies
+* creates system-wide installation of EasyBuild, by default under `/apps`, and compiles the Lmod and Lua dependencies
 * downloads newest easyconfigs, and adds their path to the EasyBuild module file
 * separates the module list into communities
 
@@ -15,6 +15,6 @@ Parts taken from [EasyBuild](https://docs.easybuild.io/), and [Lmod](https://lmo
 sudo apt update && sudo apt upgrade -y
 git clone https://github.com/anselmicz/easybuild-installer.git
 cd easybuild-installer/
-chmod +x easybuild-pretty.sh && ./$_
+./wrapper.sh | tee build.log
 cd - && rm -rf easybuild-installer/
 ```

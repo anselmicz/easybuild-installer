@@ -6,8 +6,8 @@ fi
 tar xzvf "Lmod-${lmod_version}.tar.gz"
 cd "Lmod-${lmod_version}"
 
-./configure --prefix=$lmod_prefix --with-spiderCacheDir=$lmod_spidercachedir --with-updateSystemFn=$lmod_updatesystemfn && make install
+./configure --prefix=${lmod_prefix} --with-spiderCacheDir=${lmod_spidercachedir} --with-updateSystemFn=${lmod_updatesystemfn} && make install
 cd ..
 
 # Create Lmod spider cache directory
-mkdir $lmod_prefix/moduleData
+mkdir ${lmod_cache}

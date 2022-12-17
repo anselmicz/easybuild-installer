@@ -1,14 +1,12 @@
-# main
+# root directory
 main_prefix="/apps"
-#
-## lua
+# lua
 lua_version="5.4.4"
 luaposix_version="35.1"
 lua_prefix="${main_prefix}/dependencies/lua"
 lua_modules="${lua_prefix}/share/lua/${lua_version:0:3}/?.lua;${lua_prefix}/share/lua/${lua_version:0:3}/?/init.lua;;"
 lua_libs="${lua_prefix}/lib/lua/${lua_version:0:3}/?.so;;"
-#
-## Lmod
+# Lmod
 lmod_version="8.7.14"
 lmod_prefix="${main_prefix}/dependencies"
 lmod_cache="${lmod_prefix}/moduleData"
@@ -17,11 +15,10 @@ lmod_updatesystemfn="${lmod_cache}/system.txt"
 lmod_libexec="${lmod_prefix}/lmod/${lmod_version}/libexec"
 lmod_init_bash="${lmod_prefix}/lmod/${lmod_version}/init/bash"
 lmod_cmd="${lmod_prefix}/lmod/${lmod_version}/libexec/lmod"
-#
-## EasyBuild
+# EasyBuild
 easybuild_tmpdir="eb_tmp"
 easybuild_prefix="${main_prefix}"
 easybuild_config="${HOME}/.config/easybuild"
 easybuildrc="${main_prefix}/dependencies/easybuildrc"
-### EasyBuild CUDA
+# EasyBuild CUDA
 cuda_cc="8.6"

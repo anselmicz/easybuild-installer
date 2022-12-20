@@ -9,7 +9,7 @@ echo "# Lua environment" >> $easybuildrc
 echo "# Lmod environment" >> $easybuildrc
 { echo "export PATH=\"$lmod_prefix:\$PATH\""; echo "source \"$lmod_init_bash\""; echo "export LMOD_CMD=\"$lmod_cmd\""; echo ""; } >> $easybuildrc
 
-echo "# Yell Lmod where to search for modules" >> $easybuildrc
+echo "# Tell Lmod where to search for modules" >> $easybuildrc
 cat >> $easybuildrc <<EOF
 if [ "\$(id -u)" -ne 0 ]; then
     MODULEPATH=""

@@ -16,11 +16,9 @@ if [ "\$(id -u)" -ne 0 ]; then
 
     for dir in $easybuild_prefix/modules/*
     do
-        # Exclude following directories
         if [[ (\${dir##*/} == "all") ]]; then
             continue
         fi
-        # In case it's a directory
         if [ -d "\$dir" ]; then
             if [ -z "\$MODULEPATH" ]; then
                 MODULEPATH="\$dir"

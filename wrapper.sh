@@ -1,9 +1,9 @@
 #!/bin/bash
 clear
-#if [ $EUID == 0 ]; then
-#	echo "Running as root; exiting..."
-#	exit 255
-#fi
+if [ $EUID == 0 ]; then
+	echo "Running as root; exiting..."
+	exit 255
+fi
 
 if [ -f "config" ]; then
 	set -a

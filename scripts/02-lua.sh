@@ -6,7 +6,7 @@ fi
 tar xzvf "lua-${lua_version}.tar.gz"
 cd "lua-${lua_version}"
 
-make linux
+make -j$(nproc) linux
 make INSTALL_TOP=$lua_prefix install
 cd ..
 

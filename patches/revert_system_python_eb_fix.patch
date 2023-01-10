@@ -1,4 +1,4 @@
-Since it is highly improbably that the 'DEB_PYTHON_INSTALL_LAYOUT' variable
+Since it is highly improbable that the 'DEB_PYTHON_INSTALL_LAYOUT' variable
 would be set to 'eb' in any other situation, it should be safe to continue
 using the patched 'sysconfig.py' after the EasyBuild installation is finished.
 Just in case though, I'm including this patch to restore its original state.

@@ -6,6 +6,7 @@ Parts taken from [EasyBuild](https://docs.easybuild.io/), and [Lmod](https://lmo
 ## What it does
 
 * creates system-wide installation of EasyBuild, by default under `/apps`, and compiles the Lmod and Lua dependencies
+* Patches system Python prefix scheme if necessary to avoid errors on newer versions (and then reverts it back to its original state once finished)
 * downloads newest easyconfigs, and adds their path to the EasyBuild module file
 * separates the module list into communities
 

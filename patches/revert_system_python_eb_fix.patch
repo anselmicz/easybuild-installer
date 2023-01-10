@@ -1,0 +1,17 @@
+Since it is highly improbably that the 'DEB_PYTHON_INSTALL_LAYOUT' variable
+would be set to 'eb' in any other situation, it should be safe to continue
+using the patched 'sysconfig.py' after the EasyBuild installation is finished.
+Just in case though, I'm including this patch to restore its original state.
+
+Jakub Kropacek, 2023
+--- sysconfig.py-eb_prefix	2023-01-10 20:01:23.605006142 +0100
++++ sysconfig.py-orig	2023-01-10 19:59:58.029312675 +0100
+@@ -322,8 +322,6 @@
+         deb_build = os.environ.get('DEB_PYTHON_INSTALL_LAYOUT', 'posix_local')
+         if deb_build in ('deb', 'deb_system'):
+             prefix_scheme = 'deb_system'
+-        elif deb_build in ('eb'):
+-            prefix_scheme = 'posix_prefix'
+         else:
+             prefix_scheme = 'posix_local'
+

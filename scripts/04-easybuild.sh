@@ -20,7 +20,7 @@ eb --install-latest-eb-release \
 	--sourcepath=$main_prefix/sources \
 	--trace
 
-if [ $DEB_PYTHON_INSTALL_LAYOUT == "eb" ]
+if [ "$DEB_PYTHON_INSTALL_LAYOUT" = "eb" ]
 then
 	sudo patch "$python_sysconfig_path" < "../patches/revert_system_python_eb_fix.patch"
 	unset DEB_PYTHON_INSTALL_LAYOUT

@@ -2,7 +2,7 @@ In Debian, newer versions of the Python package changed their default prefix
 scheme of user installations to 'posix_local'. EasyBuild, however, still uses
 the 'posix_prefix' scheme. A workaround is to define another option for
 the 'DEB_PYTHON_INSTALL_LAYOUT' variable that will be used specifically
-by EasyBuild, and set it up whenever necessary.
+by EasyBuild, and set up whenever necessary.
 
 Jakub Kropacek, 2023
 --- sysconfig.py-orig	2023-01-10 19:59:58.029312675 +0100

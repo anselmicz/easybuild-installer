@@ -1,3 +1,5 @@
+It's been some time since I last used this project... the time has come to let go.
+
 # easybuild-installer
 Installation script for [EasyBuild](https://github.com/easybuilders/easybuild) - software build and installation framework.
 
